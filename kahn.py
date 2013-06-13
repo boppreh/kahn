@@ -1,12 +1,10 @@
 from collections import deque
 
 class Kahn(object):
-    def __init__(self, fn, n_in, n_out):
+    def __init__(self, fn):
         self.fn = fn
-        self.n_in = n_in
-        self.n_out = n_out
-        self.in_queues = [deque() for i in range(self.n_in)]
-        self.out_queues = [None for i in range(self.n_out)]
+        self.in_queues = []
+        self.out_queues = []
 
     def __setitem__(self, index, queue):
         self.out_queues[index] = queue
@@ -14,22 +12,48 @@ class Kahn(object):
     def __getitem__(self, index):
         return self.in_queues[index]
 
-    def __call__(self):
-        inputs = [queue.popleft() for queue in self.in_queues]
-        results = self.fn(*inputs) or []
-        for result, queue in zip(results, self.out_queues):
-            queue.append(result)
+    def __call__(self, *inputs):
+        if not inputs:
+            inputs = [queue.popleft() for queue in self.in_queues]
+
+        results = self.fn(*inputs)
+
+        if isinstance(results, tuple):
+            for result, queue in zip(results, self.out_queues):
+                queue.append(result)
+        elif len(self.out_queues):
+            self.out_queues[0].append(results)
+
+def link(producer, consumer):
+    queue = deque()
+    producer.out_queues.append(queue)
+    consumer.in_queues.append(queue)
+
+def connect(*connections):
+    for producer, consumer in connections:
+        if not isinstance(producer, Kahn):
+            producer = Kahn(producer)
+        if not isinstance(consumer, Kahn):
+            consumer = Kahn(consumer)
+
+        link(producer, consumer)
 
 
 def a():
-    return (4,)
+    return 4
 
 def b(n):
+    return n * 2, n
+
+def c(n):
     print(n)
 
-ka = Kahn(a, 0, 1)
-kb = Kahn(b, 1, 0)
+def log(n):
+    print('Logged:', n)
 
-ka[0] = kb[0]
+connect((a, b), (b, c), (b, log))
+
 ka()
 kb()
+kc()
+klog()
