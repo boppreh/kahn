@@ -24,36 +24,40 @@ class Kahn(object):
         elif len(self.out_queues):
             self.out_queues[0].append(results)
 
+
 def link(producer, consumer):
+    if not isinstance(producer, Kahn):
+        producer = Kahn(producer)
+    if not isinstance(consumer, Kahn):
+        consumer = Kahn(consumer)
+        
     queue = deque()
+    
     producer.out_queues.append(queue)
     consumer.in_queues.append(queue)
 
+
 def connect(*connections):
     for producer, consumer in connections:
-        if not isinstance(producer, Kahn):
-            producer = Kahn(producer)
-        if not isinstance(consumer, Kahn):
-            consumer = Kahn(consumer)
 
         link(producer, consumer)
 
-
-def a():
-    return 4
-
-def b(n):
-    return n * 2, n
-
-def c(n):
-    print(n)
-
-def log(n):
-    print('Logged:', n)
-
-connect((a, b), (b, c), (b, log))
-
-ka()
-kb()
-kc()
-klog()
+if __name__ == '__main__':
+    def a():
+        return 4
+    
+    def b(n):
+        return n * 2, n
+    
+    def c(n):
+        print(n)
+    
+    def log(n):
+        print('Logged:', n)
+    
+    connect((a, b), (b, c), (b, log))
+    
+    ka()
+    kb()
+    kc()
+    klog()
