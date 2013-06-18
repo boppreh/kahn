@@ -13,19 +13,9 @@ network to process data by simple pipelining with parallel implementations.
 Example
 -------
     # Declare the processes.
-    a = Kahn(lambda: 4)
-    b = Kahn(lambda: 5)
-    sum = Kahn(lambda x, y: x + y)
-    log = Kahn(print)
+    a = lambda: 4
+    b = lambda: 5
+    add = lambda x, y: x + y
     
-    # Connect the outputs to inputs.
-    # Note that "sum" has two inputs, so it's linked twice.
-    connect((a, sum), (b, sum), (sum, log))
-    
-    # Invoke the processes in order. This step could be done
-    # in parallel.
-    a()
-    b()
-    sum()
-    log()
-
+    # Link the processes and start the network.
+    connect((a, add), (b, add), (add, print))
