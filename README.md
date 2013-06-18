@@ -12,6 +12,7 @@ network to process data by simple pipelining with parallel implementations.
 
 Example
 -------
+
     # Declare the processes.
     a = lambda: 4
     b = lambda: 5
@@ -19,3 +20,15 @@ Example
     
     # Link the processes and start the network.
     connect((a, add), (b, add), (add, print))
+
+
+Why use a Kahn process network?
+-------------------------------
+
+- Simplifies the individual processes, using regular parameters and return values, especially helping the tests.
+
+- The network state is completely defined by the items in the queues, making debugging much easier.
+
+- There are more levels of parallelism available, both between processes and process instances.
+
+- Determinism guaranteed, regardless of concurrency, as long as the processes are pure.
