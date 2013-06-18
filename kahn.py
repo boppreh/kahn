@@ -43,9 +43,13 @@ def connect(*connections):
         process.start()
 
 
+def append_to_file(filename):
+    return lambda content: open(filename, 'a').write(str(content) + '\n')
+
+
 if __name__ == '__main__':
     a = lambda: 4
-    b = lambda: 5
+    b = lambda: int(input('Number: '))
     add = lambda x, y: x + y
     
-    connect((a, add), (b, add), (add, print))
+    connect((a, add), (b, add), (add, append_to_file('test.txt')))
